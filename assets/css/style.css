@@ -18,10 +18,11 @@
 
   --ac:        var(--yellow); /* 현재 슬라이드 포인트 색 */
 
-  /* type */
+  /* type — 초대형 타이포는 얇은 웨이트로 */
   --sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
           "Apple SD Gothic Neo", system-ui, "Malgun Gothic", sans-serif;
-  --display: "Black Han Sans", var(--sans);
+  --display: var(--sans);
+  --thin: 230;   /* 대형 타이틀 굵기 */
 
   --pad: clamp(20px, 4vw, 48px);
   --ease: cubic-bezier(.22, 1, .36, 1);
@@ -59,8 +60,9 @@ ul { padding: 0; list-style: none; }
 }
 .loader.is-done { opacity: 0; visibility: hidden; }
 .loader__word {
-  font-family: var(--display); font-size: clamp(72px, 18vw, 200px);
-  color: var(--yellow); line-height: 1;
+  font-family: var(--display); font-weight: var(--thin);
+  font-size: clamp(72px, 18vw, 200px);
+  color: var(--yellow); line-height: 1; letter-spacing: -.02em;
   animation: pulse 1s ease-in-out infinite alternate;
 }
 @keyframes pulse { from { opacity: .35; } to { opacity: 1; } }
@@ -70,8 +72,8 @@ ul { padding: 0; list-style: none; }
   position: fixed; left: 0; right: 0; z-index: 100;
   display: flex; justify-content: space-between; align-items: center;
   padding: 18px var(--pad);
-  font-weight: 800; font-size: clamp(13px, 1.3vw, 16px);
-  letter-spacing: .02em; text-transform: uppercase;
+  font-weight: 600; font-size: clamp(13px, 1.3vw, 16px);
+  letter-spacing: .06em; text-transform: uppercase;
   mix-blend-mode: difference; /* 어떤 배경 위에서도 보이도록 */
   pointer-events: none;
 }
@@ -108,7 +110,12 @@ ul { padding: 0; list-style: none; }
     radial-gradient(130% 100% at 15% 0%, rgba(255, 255, 255, .06) 0%, transparent 55%),
     linear-gradient(150deg, #1b1b1e 0%, #0c0c0d 100%);
   background-size: cover; background-position: center;
+  /* 켄번즈: 슬라이드에 들어올 때마다 살짝 확대된 상태에서 천천히 내려앉는다 */
+  transform: scale(1.1);
+  transition: transform 6s var(--ease);
+  will-change: transform;
 }
+.panel.is-in .half { transform: scale(1); }
 .half.has-img { background-image: var(--img); }
 .half--l { clip-path: inset(0 50% 0 0); filter: grayscale(1) contrast(1.05) brightness(.85); }
 .half--r { clip-path: inset(0 0 0 50%); }
@@ -122,6 +129,7 @@ ul { padding: 0; list-style: none; }
 .panel__bg::after {
   content: ""; position: absolute; inset: 0;
   background:
+    radial-gradient(62% 52% at 50% 50%, rgba(10, 10, 10, .5) 0%, transparent 72%),
     linear-gradient(180deg, rgba(10,10,10,.55) 0%, rgba(10,10,10,.28) 40%, rgba(10,10,10,.62) 100%);
 }
 
@@ -134,7 +142,7 @@ ul { padding: 0; list-style: none; }
 }
 
 .kicker {
-  font-weight: 800; text-transform: uppercase; letter-spacing: .18em;
+  font-weight: 500; text-transform: uppercase; letter-spacing: .3em;
   font-size: clamp(12px, 1.5vw, 17px);
   color: var(--ac);
   margin-bottom: clamp(10px, 2vw, 22px);
@@ -143,14 +151,15 @@ ul { padding: 0; list-style: none; }
 }
 
 .giant {
-  font-family: var(--display); font-weight: 400;
-  font-size: clamp(58px, 13.5vw, 190px);
-  line-height: .96; letter-spacing: .01em;
+  font-family: var(--display); font-weight: var(--thin);
+  font-size: clamp(54px, 12.5vw, 180px);
+  line-height: 1.04; letter-spacing: -.02em;
   text-transform: uppercase;
   color: var(--ac);
   text-wrap: balance;
 }
-.giant--sm { font-size: clamp(48px, 10vw, 140px); }
+.giant--sm { font-size: clamp(44px, 9.5vw, 130px); }
+/* 줄 단위 기본 리빌 (글자 분해가 안 된 경우의 폴백) */
 .giant .w {
   display: block;
   opacity: 0; transform: translateY(.35em);
@@ -158,7 +167,17 @@ ul { padding: 0; list-style: none; }
 }
 .giant .w:nth-child(2) { transition-delay: .08s; }
 .giant .w:nth-child(3) { transition-delay: .16s; }
-.w--link:hover { -webkit-text-stroke: 2px var(--ac); color: transparent; }
+.panel.is-in .giant .w { opacity: 1; transform: none; }
+/* 글자 단위 스태거 리빌 — JS가 .is-split 을 붙이면 글자별로 밀려 올라온다 */
+.giant .w.is-split { opacity: 1; transform: none; overflow: hidden; }
+.giant .ch {
+  display: inline-block;
+  transform: translateY(115%);
+  transition: transform .9s var(--ease);
+  transition-delay: calc(var(--i) * 38ms);
+}
+.panel.is-in .giant .ch { transform: none; }
+.w--link:hover { -webkit-text-stroke: 1px var(--ac); color: transparent; }
 
 .sub {
   margin-top: clamp(14px, 2.4vw, 26px);
@@ -227,7 +246,7 @@ ul { padding: 0; list-style: none; }
 .rows li > span { order: 1; }
 .rows li b {
   order: 3;
-  font-family: var(--display); font-weight: 400;
+  font-family: var(--display); font-weight: 300;
   font-size: clamp(22px, 3.6vw, 40px); line-height: 1;
   color: var(--fg);
 }
@@ -261,5 +280,5 @@ ul { padding: 0; list-style: none; }
     animation-duration: .001ms !important;
     transition-duration: .001ms !important;
   }
-  .kicker, .giant .w, .sub, .cta, .rows, .fine { opacity: 1 !important; transform: none !important; }
+  .kicker, .giant .w, .giant .ch, .sub, .cta, .rows, .fine, .half { opacity: 1 !important; transform: none !important; }
 }
