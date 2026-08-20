@@ -125,6 +125,20 @@ ul { padding: 0; list-style: none; }
 .half--r { clip-path: inset(0 0 0 50%); }
 /* 히어로(야간 외관): 노란 간판이 생명이라 흑백 없이 컬러 그대로 */
 #hero .half--l { filter: none; }
+/* 세로 사진이라 가로 화면에서 cover를 쓰면 건물이 잘린다.
+   가로 화면에서는 건물 전체(contain)를 보여주고, 빈 좌우는 같은 사진을
+   크게 흐린 배경으로 채워 잘림 없이 자연스럽게 이어지게 한다. */
+#hero .half {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+#hero .panel__bg.has-img::before {
+  content: ""; position: absolute; inset: -6%;
+  background-image: var(--img);
+  background-size: cover; background-position: center;
+  filter: blur(46px) brightness(.4) saturate(.75);
+}
 /* 탈의실·샤워실: 좌우가 서로 다른 사진이므로 둘 다 컬러 */
 .panel__bg--duo .half--l { filter: none; }
 /* 사진 없을 때: 좌우 톤을 다르게 해서 갈라진 느낌 유지 */
@@ -241,7 +255,6 @@ ul { padding: 0; list-style: none; }
 }
 
 /* ---------------------------------------------------- 히어로 스크롤 유도 */
-@media (max-height: 730px) { .scroll-hint { display: none; } } /* 낮은 화면에서 CTA와 겹침 방지 */
 .scroll-hint {
   position: absolute; left: 50%; bottom: calc(var(--pad) + 40px);
   transform: translateX(-50%); z-index: 3;
@@ -259,6 +272,8 @@ ul { padding: 0; list-style: none; }
   animation: drip 1.8s var(--ease) infinite;
 }
 @keyframes drip { to { top: 100%; } }
+/* 화면이 낮으면 CTA 버튼과 겹치므로 숨긴다 (기본 규칙보다 뒤에 와야 적용됨) */
+@media (max-height: 860px) { .scroll-hint { display: none; } }
 
 /* ------------------------------------------------------- 필름 그레인 질감 */
 body::after {

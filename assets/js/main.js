@@ -33,7 +33,7 @@
   Array.prototype.forEach.call(document.querySelectorAll('.panel__bg'), function (bg) {
     var halves = Array.prototype.slice.call(bg.querySelectorAll('.half'));
     if (bg.hasAttribute('data-img')) {
-      loadInto(bg.getAttribute('data-img'), halves); // 한 장을 좌우로 분할
+      loadInto(bg.getAttribute('data-img'), halves.concat([bg])); // 한 장을 좌우로 분할 (+뒤쪽 블러 배경용)
     } else {
       // 좌/우 서로 다른 사진 (예: 탈의실 | 샤워실)
       loadInto(bg.getAttribute('data-img-l'), halves.filter(function (h) { return h.classList.contains('half--l'); }));
