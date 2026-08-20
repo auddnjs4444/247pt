@@ -100,6 +100,114 @@
     });
   });
 
+  /* =====================================================================
+     그룹PT 시간표 모달
+     - 첫 진입 시 자동 팝업 ('오늘 하루 보지 않기' 체크 시 24시간 미노출)
+     - PT 섹션의 '그룹PT 시간표 보기' 버튼으로는 언제나 열림
+     ===================================================================== */
+  var modal = document.getElementById('scheduleModal');
+
+  if (modal) {
+    var modalBox = modal.querySelector('.modal__box');
+    var closeBtn = document.getElementById('scheduleClose');
+    var hideToday = document.getElementById('scheduleHideToday');
+    var STORE_KEY = '247:schedule-hidden-until';
+    var lastTrigger = null;
+    var savedY = 0;
+    var closeTimer = null;
+
+    // localStorage 는 사파리 프라이빗 모드 등에서 막힐 수 있어 항상 감싼다
+    function readHiddenUntil() {
+      try { return parseInt(localStorage.getItem(STORE_KEY), 10) || 0; }
+      catch (e) { return 0; }
+    }
+    function writeHiddenUntil(ts) {
+      try { localStorage.setItem(STORE_KEY, String(ts)); } catch (e) {}
+    }
+
+    function focusables() {
+      return Array.prototype.filter.call(
+        modal.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])'),
+        function (el) { return el.offsetParent !== null || el === closeBtn; }
+      );
+    }
+
+    function openModal(trigger) {
+      if (!modal.hidden) return;
+      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+
+      lastTrigger = trigger || null;
+      savedY = window.scrollY;
+
+      modal.hidden = false;
+      document.documentElement.classList.add('is-modal-open');
+      // hidden 해제 직후 한 프레임 뒤에 클래스를 붙여야 트랜지션이 재생된다
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { modal.classList.add('is-open'); });
+      });
+      if (closeBtn) closeBtn.focus();
+    }
+
+    function closeModal() {
+      if (modal.hidden) return;
+
+      if (hideToday && hideToday.checked) {
+        writeHiddenUntil(Date.now() + 24 * 60 * 60 * 1000);
+      }
+
+      modal.classList.remove('is-open');
+      document.documentElement.classList.remove('is-modal-open');
+
+      // 스크롤 잠금 해제 시 위치가 튀지 않게 복원
+      var prev = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = 'auto';
+      window.scrollTo(0, savedY);
+      document.documentElement.style.scrollBehavior = prev;
+
+      closeTimer = setTimeout(function () {
+        modal.hidden = true;
+        closeTimer = null;
+      }, reduceMotion ? 0 : 280);
+
+      if (lastTrigger && typeof lastTrigger.focus === 'function') lastTrigger.focus();
+      lastTrigger = null;
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-schedule-open]'), function (btn) {
+      btn.addEventListener('click', function () { openModal(btn); });
+    });
+    Array.prototype.forEach.call(modal.querySelectorAll('[data-schedule-close]'), function (btn) {
+      btn.addEventListener('click', closeModal);
+    });
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+    document.addEventListener('keydown', function (e) {
+      if (modal.hidden) return;
+
+      if (e.key === 'Escape') { closeModal(); return; }
+
+      if (e.key === 'Tab') { // 포커스 트랩
+        var items = focusables();
+        if (!items.length) return;
+        var first = items[0], last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus();
+        } else if (!modalBox.contains(document.activeElement)) {
+          e.preventDefault(); first.focus();
+        }
+      }
+    });
+
+    // 첫 진입 자동 팝업 (로더가 사라진 뒤)
+    if (Date.now() >= readHiddenUntil()) {
+      window.addEventListener('load', function () {
+        setTimeout(function () { openModal(null); }, reduceMotion ? 0 : 900);
+      });
+    }
+  }
+
   /* ------------------------------------------------------------------ 기타 */
   var year = document.getElementById('year');
   if (year) year.textContent = new Date().getFullYear();

@@ -137,7 +137,10 @@
       </article>
     </div>
 
-    <a class="cta" href="https://m.booking.naver.com/booking/13/bizes/1569635/items/7326574?theme=place&amp;service-target=map-pc&amp;lang=ko&amp;area=bmp&amp;map-search=1" target="_blank" rel="noopener">PT 상담 예약 <em>&#8599;</em></a>
+    <div class="cta-row">
+      <a class="cta" href="https://m.booking.naver.com/booking/13/bizes/1569635/items/7326574?theme=place&amp;service-target=map-pc&amp;lang=ko&amp;area=bmp&amp;map-search=1" target="_blank" rel="noopener">PT 상담 예약 <em>&#8599;</em></a>
+      <button type="button" class="cta" data-schedule-open>그룹PT 시간표 보기 <em>&#8599;</em></button>
+    </div>
   </div>
   <span class="panel__num">02 / 10</span>
 </section>
@@ -289,6 +292,31 @@
 </section>
 
 </main>
+
+<!-- ================= 그룹PT 시간표 모달 ================= -->
+<div class="modal" id="scheduleModal" role="dialog" aria-modal="true"
+     aria-label="247피트니스 5:1 그룹PT 시간표" hidden>
+  <div class="modal__backdrop" data-schedule-close></div>
+
+  <div class="modal__box" role="document">
+    <button type="button" class="modal__close" id="scheduleClose" aria-label="시간표 닫기">
+      <span aria-hidden="true">&times;</span>
+    </button>
+
+    <div class="modal__body">
+      <img class="modal__img" src="assets/img/grouppt-schedule.jpg"
+           alt="247피트니스 5:1 그룹PT 시간표" decoding="async" />
+    </div>
+
+    <div class="modal__foot">
+      <label class="modal__check">
+        <input type="checkbox" id="scheduleHideToday" />
+        <span>오늘 하루 보지 않기</span>
+      </label>
+      <button type="button" class="cta cta--sm" data-schedule-close>닫기</button>
+    </div>
+  </div>
+</div>
 
 <script src="assets/js/main.js" defer></script>
 </body>
