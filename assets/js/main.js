@@ -17,17 +17,35 @@
   /* ------------------------------------------------------- 이미지 지연 적용
      assets/img 에 사진이 없어도 깨지지 않도록, 파일이 실제로 로드될 때만
      좌/우 반쪽 배경으로 넣는다. (왼쪽 흑백 / 오른쪽 컬러 디피티크) */
-  Array.prototype.forEach.call(document.querySelectorAll('.panel__bg[data-img]'), function (bg) {
-    var src = bg.getAttribute('data-img');
-    if (!src) return;
+  function loadInto(src, targets) {
+    if (!src || !targets.length) return;
     var abs = new URL(src, window.location.href).href; // CSS 파일 기준 상대경로 오해석 방지
     var probe = new Image();
     probe.onload = function () {
-      Array.prototype.forEach.call(bg.querySelectorAll('.half'), function (h) {
-        h.style.setProperty('--img', 'url("' + abs + '")');
-        h.classList.add('has-img');
+      targets.forEach(function (el) {
+        el.style.setProperty('--img', 'url("' + abs + '")');
+        el.classList.add('has-img');
       });
     };
+    probe.src = abs;
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.panel__bg'), function (bg) {
+    var halves = Array.prototype.slice.call(bg.querySelectorAll('.half'));
+    if (bg.hasAttribute('data-img')) {
+      loadInto(bg.getAttribute('data-img'), halves); // 한 장을 좌우로 분할
+    } else {
+      // 좌/우 서로 다른 사진 (예: 탈의실 | 샤워실)
+      loadInto(bg.getAttribute('data-img-l'), halves.filter(function (h) { return h.classList.contains('half--l'); }));
+      loadInto(bg.getAttribute('data-img-r'), halves.filter(function (h) { return h.classList.contains('half--r'); }));
+    }
+  });
+
+  // 트레이너 프로필 사진
+  Array.prototype.forEach.call(document.querySelectorAll('[data-timg]'), function (el) {
+    var abs = new URL(el.getAttribute('data-timg'), window.location.href).href;
+    var probe = new Image();
+    probe.onload = function () { el.style.backgroundImage = 'url("' + abs + '")'; };
     probe.src = abs;
   });
 

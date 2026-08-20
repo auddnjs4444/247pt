@@ -123,6 +123,10 @@ ul { padding: 0; list-style: none; }
 .half.has-img { background-image: var(--img); }
 .half--l { clip-path: inset(0 50% 0 0); filter: grayscale(1) contrast(1.05) brightness(.85); }
 .half--r { clip-path: inset(0 0 0 50%); }
+/* 히어로(야간 외관): 노란 간판이 생명이라 흑백 없이 컬러 그대로 */
+#hero .half--l { filter: none; }
+/* 탈의실·샤워실: 좌우가 서로 다른 사진이므로 둘 다 컬러 */
+.panel__bg--duo .half--l { filter: none; }
 /* 사진 없을 때: 좌우 톤을 다르게 해서 갈라진 느낌 유지 */
 .half--l:not(.has-img) { background-color: #202023; }
 .half--r:not(.has-img)::after {
@@ -262,6 +266,56 @@ body::after {
   pointer-events: none; opacity: .07;
   background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22240%22%20height%3D%22240%22%3E%3Cfilter%20id%3D%22n%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.85%22%20numOctaves%3D%222%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22240%22%20height%3D%22240%22%20filter%3D%22url(%23n)%22%2F%3E%3C%2Fsvg%3E");
 }
+
+/* --------------------------------------------------- 트레이너 프로필 패널 */
+.panel--trainers { background: var(--bg); }
+.panel__inner--wide { width: min(1150px, 100%); }
+.sub--lead {
+  font-size: clamp(17px, 2.4vw, 26px); font-weight: 600; line-height: 1.5;
+  letter-spacing: -.02em;
+}
+.trainers {
+  width: 100%;
+  display: flex; flex-direction: column;
+  gap: clamp(22px, 4vw, 40px);
+  margin-top: clamp(30px, 5vw, 56px);
+}
+.tcard {
+  display: flex; align-items: center; gap: clamp(18px, 3.5vw, 44px);
+  text-align: left; width: fit-content; max-width: 100%;
+  opacity: 0; transform: translateY(26px);
+  transition: opacity .8s var(--ease) .15s, transform .8s var(--ease) .15s;
+}
+.panel.is-in .tcard { opacity: 1; transform: none; }
+/* 대각선 배치: 첫 카드는 왼쪽 위, 둘째 카드는 오른쪽 아래 */
+.tcard--rev {
+  flex-direction: row-reverse; align-self: flex-end; text-align: right;
+  transition-delay: .3s;
+}
+.tcard__photo {
+  flex-shrink: 0;
+  width: clamp(140px, 24vw, 270px); aspect-ratio: 3 / 4;
+  border-radius: 4px; background-size: cover; background-position: center top;
+  background-color: var(--bg-elev, #161617);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+}
+.tcard__name {
+  margin: 0; font-size: clamp(26px, 4vw, 44px); font-weight: 700;
+  letter-spacing: -.03em; color: var(--ac); line-height: 1.15;
+}
+.tcard__name small { font-size: .45em; font-weight: 500; color: var(--fg); letter-spacing: .06em; }
+.tcard__role { margin-top: 8px; font-size: clamp(13px, 1.5vw, 15.5px); color: var(--fg-mid, rgba(242,242,240,.72)); }
+.tcard__career { margin-top: 14px; }
+.tcard__career li {
+  position: relative; padding-left: 14px;
+  font-size: clamp(12.5px, 1.4vw, 14.5px); color: var(--fg-dim); line-height: 2;
+}
+.tcard--rev .tcard__career li { padding-left: 0; padding-right: 14px; }
+.tcard__career li::before {
+  content: ""; position: absolute; left: 0; top: .95em;
+  width: 5px; height: 5px; border-radius: 50%; background: var(--ac);
+}
+.tcard--rev .tcard__career li::before { left: auto; right: 0; }
 
 /* ------------------------------------------------- list형 패널 (가격/연락처) */
 .panel--list { background: var(--bg); }
